@@ -15,6 +15,13 @@ jobs:
           npm i @capacitor/core @capacitor/cli @capacitor/android @capacitor/app
           npx cap init "FR_GAME ME" com.frgame.me --web-dir=www
           npx cap add android
+          cat >> android/app/build.gradle <<'EOF'
+
+          configurations.all {
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+              exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+          }
+          EOF
           npx cap sync
           cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
