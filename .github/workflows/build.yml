@@ -23,8 +23,12 @@ jobs:
           }
           EOF
           npx cap sync
-          cd android && chmod +x gradlew && ./gradlew assembleDebug
+          cd android && chmod +x gradlew && ./gradlew assembleRelease && cd ..
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          keytool -genkeypair -keystore release.jks -alias frgame -keyalg RSA -keysize 2048 -validity 10000 -storepass frgame2900 -keypass frgame2900 -dname "CN=FR_GAME, O=FR_GAME, C=IR"
+          $BT/zipalign -p 4 android/app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
+          $BT/apksigner sign --ks release.jks --ks-key-alias frgame --ks-pass pass:frgame2900 --key-pass pass:frgame2900 --out FR_GAME.apk aligned.apk
       - uses: actions/upload-artifact@v4
         with:
           name: FR_GAME-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: FR_GAME.apk
